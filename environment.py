@@ -44,9 +44,10 @@ class Env():
             if self.checkGreen(rgbState):
                 finalReward -= 0.05
             
-            finalReward -= action[2]
+            # finalReward -= action[2]
 
             finalReward += reward
+            # finalReward -= np.linalg.norm(np.array(action))
             self.storeRewards(reward)
         
             death = True

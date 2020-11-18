@@ -7,7 +7,7 @@ class Args():
 
     def __init__(self):
         self.checkpoint = 0
-        trial = 0
+        trial = 2
         self.test = False
 
         self.saveInterval = 10
@@ -29,7 +29,7 @@ class Args():
         
 
         #model parameters
-        self.valueStackSize = 8
+        self.valueStackSize = 1
 
         #agent parameters
         self.actionMultiplier = np.array([2., 1.0, 1.0])
