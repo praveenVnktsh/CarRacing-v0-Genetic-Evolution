@@ -6,6 +6,7 @@ from environment import Env
 from config import Args, configure
 from API_KEYS import api_key, project_name
 import torch
+import os
 
 configs, use_cuda,  device = configure()
 
@@ -24,13 +25,17 @@ def mutateWeightsAndBiases(agents, configs:Args):
     nextAgents = []
     for i in range(configs.nAgents):
         pair = agents[np.random.randint(configs.nSurvivors)]
-        agent = Agent(configs, device, stateDict = pair[0])
-        for param in agent.parameters():
+        agentNet = Agent(configs, device, stateDict = pair[0]).net
+        for param in agentNet.parameters():
             param.data += configs.mutationPower * torch.randn_like(param)
-        nextAgents.append(agent.getParams())
+        nextAgents.append(agentNet.state_dict())
     return nextAgents
 
-
+def saveWeightsAndBiases(agentDicts, generation, configs:Args):
+    loc = configs.saveLocation +'generation_'+str(generation) +  '/' 
+    os.makedirs(loc, exist_ok = True)
+    for i in range(len(agentDicts)):
+        torch.save(agentDicts[i], loc + str(i) +  '-AGENT.pkl')
 
 
 
@@ -78,17 +83,18 @@ if __name__ == "__main__":
             
             avgScore = np.mean(np.array(scores))
             print('Generation = ', generationIndex, 'Spawn =', spawnIndex, 'Average score =',  avgScore)
-            currentAgents.append([agent.getParams(), avgScore])
+            nextAgents.append((agent.getParams(), avgScore))
 
 
-        
-
-        currentAgents = sorted(currentAgents, key = lambda agent: agent[1], reverse = True)
+        currentAgents = sorted(nextAgents, key = lambda ag: ag[1], reverse = True)
         print('----------- Generation', generationIndex,'Complete----------')
-        scores = np.array([pair[0] for pair in currentAgents])
+        scores = np.array([pair[1] for pair in currentAgents])
         print('FITNESS = ', np.mean(scores))
         nextAgents = currentAgents[:configs.nSurvivors]
+        scores = np.array([pair[1] for pair in nextAgents])
+        print('FITNESS of BEST AGENTS = ', np.mean(scores))
         currentAgents = mutateWeightsAndBiases(nextAgents, configs)
+        saveWeightsAndBiases(nextAgents, generationIndex, configs)
 
        
         

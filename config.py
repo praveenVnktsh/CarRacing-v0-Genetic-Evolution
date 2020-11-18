@@ -14,7 +14,7 @@ class Args():
 
 
         # evolution parameters
-        self.nAgents = 500
+        self.nAgents = 100
         self.nSurvivors = 20
         self.mutationPower = 0.02
         self.nAvg = 1
