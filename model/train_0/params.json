@@ -1,0 +1,1 @@
+{'checkpoint': 0, 'test': False, 'saveInterval': 10, 'nAgents': 500, 'nSurvivors': 20, 'mutationPower': 0.02, 'nAvg': 1, 'action_repeat': 4, 'seed': 0, 'numberOfLasers': 5, 'deathThreshold': 2000, 'deathByGreeneryThreshold': 35, 'maxDistance': 100, 'valueStackSize': 8, 'actionMultiplier': array([2., 1., 1.]), 'actionBias': array([-1.,  0.,  0.]), 'saveLocation': 'model/train_0/'}
