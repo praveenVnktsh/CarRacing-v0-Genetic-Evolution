@@ -24,11 +24,12 @@ def getTrainTest( isTest = False, experiment = None,):
 def mutateWeightsAndBiases(agents, configs:Args):
     nextAgents = []
     for i in range(configs.nAgents):
-        pair = agents[i % configs.nSurvivors]
+        pair = agents[i % len(agents)]
         agentNet = Agent(configs, device, stateDict = pair[0]).net
         for param in agentNet.parameters():
             param.data += configs.mutationPower * torch.randn_like(param)
         nextAgents.append(agentNet.state_dict())
+
     return nextAgents
 
 def saveWeightsAndBiases(agentDicts, generation, configs:Args):
@@ -50,7 +51,8 @@ if __name__ == "__main__":
             statedict = torch.load(configs.saveLocation +'generation_'+str(configs.checkpoint) +  '/'  + str(spawnIndex) +  '-AGENT.pkl')
             currentAgents.append(statedict)
         currentAgents = mutateWeightsAndBiases(currentAgents, configs)
-        print('Loaded agents from checkpoints', configs.checkpoint)
+        print('-------------BEGINNING EXPERIMENT--------------')
+        print('Loaded agents from checkpoint', configs.checkpoint)
     else:
         for spawnIndex in range(configs.nAgents):
             agent = Agent(configs, device)
@@ -61,11 +63,11 @@ if __name__ == "__main__":
     with getTrainTest(configs.test, experiment):
 
 
-        print('-------------BEGINNING EXPERIMENT--------------')
+        
         for generationIndex in range(configs.checkpoint, 100000):
             
 
-            for spawnIndex in range(configs.nAgents):
+            for spawnIndex in range(len(currentAgents)):
                 agent = Agent(configs, device, stateDict = currentAgents[spawnIndex])
                 scores = []
 
@@ -93,8 +95,19 @@ if __name__ == "__main__":
             currentAgents = sorted(nextAgents, key = lambda ag: ag[1], reverse = True)
             print('----------- Generation', generationIndex,'Complete----------')
             scores = np.array([pair[1] for pair in currentAgents])
+            print(scores)
             print('FITNESS = ', np.mean(scores))
-            nextAgents = currentAgents[:configs.nSurvivors]
+            nextAgents = []
+            for i in range(len(currentAgents)):
+                if currentAgents[i][1] > 0:
+                    nextAgents.append(currentAgents[i])
+            if len(nextAgents) > configs.nSurvivors:
+                nextAgents = nextAgents[:configs.nSurvivors]
+            scores = np.array([pair[1] for pair in nextAgents])
+            print(scores)
+            print('FITNESS OF BEST = ', np.mean(scores))
+
+
             currentAgents = mutateWeightsAndBiases(nextAgents, configs)
             saveWeightsAndBiases(nextAgents, generationIndex, configs)
 

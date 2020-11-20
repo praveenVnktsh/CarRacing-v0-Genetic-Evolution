@@ -6,7 +6,7 @@ import numpy as np
 class Args():
 
     def __init__(self):
-        self.checkpoint = 0
+        self.checkpoint = 74
         trial = 2
         self.test = False
 
@@ -14,9 +14,9 @@ class Args():
 
 
         # evolution parameters
-        self.nAgents = 100
-        self.nSurvivors = 20
-        self.mutationPower = 0.02
+        self.nAgents = 20
+        self.nSurvivors = 5
+        self.mutationPower = 0.001
         self.nAvg = 1
 
         # environment parameters
