@@ -2,12 +2,12 @@ from comet_ml import Experiment
 from time import sleep
 import numpy as np
 from agentFile import Agent
-from environment import Env
+from environment import Car, Environment
 from config import Args, configure
 from API_KEYS import api_key, project_name
 import torch
 import os
-
+import time
 configs, use_cuda,  device = configure()
 
 ## SET LOGGING
@@ -23,12 +23,12 @@ def getTrainTest( isTest = False, experiment = None,):
 
 def mutateWeightsAndBiases(agents, configs:Args):
     nextAgents = []
-    for i in range(configs.nAgents):
+    for i in range(configs.numberOfCars):
         pair = agents[i % len(agents)]
-        agentNet = Agent(configs, device, stateDict = pair[0]).net
-        for param in agentNet.parameters():
+        agentNet = Agent(configs, device, stateDict = pair[0].getParams())
+        for param in agentNet.net.parameters():
             param.data += configs.mutationPower * torch.randn_like(param)
-        nextAgents.append(agentNet.state_dict())
+        nextAgents.append(agentNet)
 
     return nextAgents
 
@@ -41,9 +41,9 @@ def saveWeightsAndBiases(agentDicts, generation, configs:Args):
 
 
 if __name__ == "__main__":
+    print('-------------BEGINNING EXPERIMENT--------------')
     
     
-    env = Env(configs)
     
     currentAgents = []
     if configs.checkpoint != 0:
@@ -51,68 +51,68 @@ if __name__ == "__main__":
             statedict = torch.load(configs.saveLocation +'generation_'+str(configs.checkpoint) +  '/'  + str(spawnIndex) +  '-AGENT.pkl')
             currentAgents.append(statedict)
         currentAgents = mutateWeightsAndBiases(currentAgents, configs)
-        print('-------------BEGINNING EXPERIMENT--------------')
-        print('Loaded agents from checkpoint', configs.checkpoint)
+        print('-> Loaded agents from checkpoint', configs.checkpoint)
     else:
-        for spawnIndex in range(configs.nAgents):
+        for spawnIndex in range(configs.numberOfCars):
             agent = Agent(configs, device)
-            currentAgents.append(agent.getParams())
+            currentAgents.append(agent)
 
-    nextAgents = []
+
+    env = Environment(configs)
 
     with getTrainTest(configs.test, experiment):
+        action = np.zeros((configs.numberOfCars, 3))
+        state = np.ones((configs.numberOfCars, configs.numberOfLasers))*configs.distanceToSee
+        dead = np.zeros((configs.numberOfCars, ))
+        rewards = np.zeros((configs.numberOfCars, ))
 
-
-        
+            
         for generationIndex in range(configs.checkpoint, 100000):
+            env.reset()
+            action = np.zeros((configs.numberOfCars, 3))
+            state = np.ones((configs.numberOfCars, configs.numberOfLasers))*configs.distanceToSee
+            dead = np.zeros((configs.numberOfCars, ))
+            rewards = np.zeros((configs.numberOfCars, ))
+            nextAgents = []
+
+            startTime = time.time()
+            for timestep in range(50000):
+                for agentIndex in range(len(currentAgents)):
+                    if dead[agentIndex] != 1.0:
+                        action[agentIndex] = currentAgents[agentIndex].chooseAction(state[agentIndex])
+                action[:, 0] *=2 
+                action[:, 0] -=1 
+                if (generationIndex + 1) % 5 == 0:
+                    render = True
+                else:
+                    render = False
+                state, dead, rewards = env.step(action, render = render)
+                if 0.0 not in dead:
+                    break
+
+            avgScore = np.mean(rewards)
+            experiment.log_metric("fitness", np.mean(avgScore) , step= generationIndex)
+
+            print('Generation', generationIndex,'Complete in ',time.time() - startTime , 'seconds')
+            print('FITNESS = ', avgScore)
+            print('---------------')
             
 
-            for spawnIndex in range(len(currentAgents)):
-                agent = Agent(configs, device, stateDict = currentAgents[spawnIndex])
-                scores = []
+            temp = [[currentAgents[agentIndex], rewards[agentIndex]] for agentIndex in range(len(currentAgents)) ]
 
-                for episode in range(configs.nAvg): #repeat for 3 iterations
-                    score = 0
-                    prevState = env.reset()
-                    for timestep in range(10000):
-                        action = agent.chooseAction(prevState)
-                        
-                        curState, reward, dead, reasonForDeath = env.step(action, timestep)
-                        
-                        score += reward
-                        prevState = curState
+            currentAgents = sorted(temp, key = lambda ag: ag[1], reverse = True)
 
-                        if dead:
-                            break
-                    
-                    scores.append(score)
-                
-                avgScore = np.mean(np.array(scores))
-                print('Generation = ', generationIndex, 'Spawn =', spawnIndex, 'Average score =',  avgScore)
-                nextAgents.append((agent.getParams(), avgScore))
+            
 
 
-            currentAgents = sorted(nextAgents, key = lambda ag: ag[1], reverse = True)
-            print('----------- Generation', generationIndex,'Complete----------')
-            scores = np.array([pair[1] for pair in currentAgents])
-            print(scores)
-            print('FITNESS = ', np.mean(scores))
-            nextAgents = []
-            for i in range(len(currentAgents)):
-                if currentAgents[i][1] > 0:
-                    nextAgents.append(currentAgents[i])
-            if len(nextAgents) > configs.nSurvivors:
-                nextAgents = nextAgents[:configs.nSurvivors]
-            scores = np.array([pair[1] for pair in nextAgents])
-            print(scores)
-            print('FITNESS OF BEST = ', np.mean(scores))
-
+            nextAgents = currentAgents[:configs.nSurvivors]
 
             currentAgents = mutateWeightsAndBiases(nextAgents, configs)
-            saveWeightsAndBiases(nextAgents, generationIndex, configs)
+            if (generationIndex + 1) % 5 == 0:
+                saveWeightsAndBiases(nextAgents, generationIndex, configs)
 
         
             
             
-            experiment.log_metric("fitness", np.mean(scores) , step= generationIndex)
+            
 
