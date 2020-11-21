@@ -23,12 +23,19 @@ def getTrainTest( isTest = False, experiment = None,):
 
 def mutateWeightsAndBiases(agents, configs:Args):
     nextAgents = []
-    for i in range(configs.numberOfCars):
-        pair = agents[i % len(agents)]
-        agentNet = Agent(configs, device, stateDict = pair[0].getParams())
-        for param in agentNet.net.parameters():
-            param.data += configs.mutationPower * torch.randn_like(param)
-        nextAgents.append(agentNet)
+
+    if configs.test == True:
+        for i in range(1):
+            pair = agents[i]
+            agentNet = Agent(configs, device, stateDict = pair[0].getParams())
+            nextAgents.append(agentNet)
+    else:
+        for i in range(configs.numberOfCars):
+            pair = agents[i % len(agents)]
+            agentNet = Agent(configs, device, stateDict = pair[0].getParams())
+            for param in agentNet.net.parameters():
+                param.data += configs.mutationPower * torch.randn_like(param)
+            nextAgents.append(agentNet)
 
     return nextAgents
 
@@ -50,6 +57,7 @@ if __name__ == "__main__":
         for spawnIndex in range(configs.nSurvivors):
             statedict = torch.load(configs.saveLocation +'generation_'+str(configs.checkpoint) +  '/'  + str(spawnIndex) +  '-AGENT.pkl')
             currentAgents.append(statedict)
+        
         currentAgents = mutateWeightsAndBiases(currentAgents, configs)
         print('-> Loaded agents from checkpoint', configs.checkpoint)
     else:
@@ -80,12 +88,22 @@ if __name__ == "__main__":
                 for agentIndex in range(len(currentAgents)):
                     if dead[agentIndex] != 1.0:
                         action[agentIndex] = currentAgents[agentIndex].chooseAction(state[agentIndex])
-                action[:, 0] *=2 
-                action[:, 0] -=1 
-                if (generationIndex + 1) % 5 == 0:
-                    render = True
+                try:
+                    with np.errstate(all='raise'):
+                        action[:, 0] *=2 
+                        action[:, 0] -=1
+                        
+                except:
+                    print(action) 
+
+                if not configs.test:
+                    if (generationIndex) % 5 == 0:
+                        render = True
+                    else:
+                        render = False
                 else:
-                    render = False
+                    render = True
+                    
                 state, dead, rewards = env.step(action, render = render)
                 if 0.0 not in dead:
                     break
@@ -97,19 +115,14 @@ if __name__ == "__main__":
             print('FITNESS = ', avgScore)
             print('---------------')
             
+            if not configs.test:
+                temp = [[currentAgents[agentIndex], rewards[agentIndex]] for agentIndex in range(len(currentAgents)) ]
+                currentAgents = sorted(temp, key = lambda ag: ag[1], reverse = True)
+                nextAgents = currentAgents[:configs.nSurvivors]
 
-            temp = [[currentAgents[agentIndex], rewards[agentIndex]] for agentIndex in range(len(currentAgents)) ]
-
-            currentAgents = sorted(temp, key = lambda ag: ag[1], reverse = True)
-
-            
-
-
-            nextAgents = currentAgents[:configs.nSurvivors]
-
-            currentAgents = mutateWeightsAndBiases(nextAgents, configs)
-            if (generationIndex + 1) % 5 == 0:
-                saveWeightsAndBiases(nextAgents, generationIndex, configs)
+                currentAgents = mutateWeightsAndBiases(nextAgents, configs)
+                if (generationIndex + 1) % 5 == 0:
+                    saveWeightsAndBiases(nextAgents, generationIndex, configs)
 
         
             

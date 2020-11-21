@@ -6,7 +6,7 @@ import numpy as np
 class Args():
 
     def __init__(self):
-        self.checkpoint = 0
+        self.checkpoint = 24
         trial = 4
         self.test = False
         
@@ -16,7 +16,7 @@ class Args():
 
         # evolution parameters
         
-        self.mutationPower = 0.03
+        self.mutationPower = 0.01
         self.nAvg = 1
 
         # environment parameters
@@ -38,8 +38,9 @@ class Args():
         #Environment properties        
         self.carImagePath = "environment/data/car.png"
         self.trackPath = "environment/data/track.png"
-        self.startingPositionX = 118
+        self.startingPositionX = 175
         self.startingPositionY = 435
+        self.cameraOffset = 50
         self.cameraHeight = 300
         self.width = 1500
         self.height = 1500
@@ -48,16 +49,22 @@ class Args():
         #Car properties
         self.anglesToSee = [-50, -25, 0, 25, 50]
         self.numberOfLasers = len(self.anglesToSee)
-        self.maxSteering = 90
-        self.maxAcceleration = 0.1
+        self.maxSteering = 5
+        self.maxAcceleration = 0.3
         self.maxVelocity = 1.5
-        self.freeDeceleration = 0.03
+        self.freeDeceleration = 0.1
+        self.angle = 85
         self.distanceToSee = 150
         self.maxBraking = 0.05
         # Settings
         self.nSurvivors = 20
-        self.numberOfCars = 100
+        self.numberOfCars = 500
+        if self.test:
+            self.nSurvivors = 1
+            self.numberOfCars = 1
+        
         self.render = True
+        self.deathThreshold = 4500
 
 
 
@@ -85,7 +92,4 @@ def configure():
     
     useCuda = torch.cuda.is_available()
     device = torch.device("cuda" if useCuda else "cpu")
-    # torch.manual_seed(args.seed)
-    # if useCuda:
-    #     torch.cuda.manual_seed(args.seed)
     return args, useCuda, device

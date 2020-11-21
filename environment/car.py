@@ -7,7 +7,7 @@ import numpy as np
 
  
 class Car(pygame.sprite.Sprite):
-    def __init__(self, x, y, configs: Args, index,  trackImage, angle=90.0,  ):
+    def __init__(self, x, y, configs: Args, index,  trackImage,   ):
         super().__init__()
         self.index = index
         self.trackImage = trackImage
@@ -18,7 +18,7 @@ class Car(pygame.sprite.Sprite):
 
 
         self.configs = configs
-        self.angle = angle
+        self.angle = configs.angle
         self.length = 16
         self.maxAcceleration = configs.maxAcceleration
         self.maxSteering = configs.maxSteering
@@ -44,6 +44,7 @@ class Car(pygame.sprite.Sprite):
 
         self.laserDistances = [0.0, 0.0, 0.0, 0.0, 0.0]
         self.pointsToMark = []
+        self.permaToMark = (self.carTopPosition.x, self.carTopPosition.y)
 
     def getPixelAt(self, dist, angleOffset):
         loc = [0,0]
@@ -110,6 +111,9 @@ class Car(pygame.sprite.Sprite):
                 if dist < 5:
                     self.dead = True
                     self.reward -= 10
+
+            if self.configs.test:
+                self.permaToMark = self.carTopPosition
 
             
 
