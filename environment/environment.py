@@ -35,15 +35,15 @@ class Environment:
         dead = np.zeros((self.config.numberOfCars,))
         i = 0
 
-        # pressed = pygame.key.get_pressed()
-        # if pressed[pygame.K_UP]:
-        #     action[:, 1] = 1.0
-        # if pressed[pygame.K_LEFT]:
-        #     action[:, 0] = 1.0
-        # if pressed[pygame.K_RIGHT]:
-        #     action[:, 0] = -1.0
-        # if pressed[pygame.K_SPACE]:
-        #     action[:, 2] = 1.0
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_UP]:
+            action[:, 1] = 1.0
+        if pressed[pygame.K_LEFT]:
+            action[:, 0] = 1.0
+        if pressed[pygame.K_RIGHT]:
+            action[:, 0] = -1.0
+        if pressed[pygame.K_SPACE]:
+            action[:, 2] = 1.0
 
 
         self.index += 1
@@ -61,8 +61,8 @@ class Environment:
                     self.cameraPosition.y += self.config.cameraOffset
             i += 1
 
-        if self.index >= self.config.deathThreshold:
-            dead[dead != 0.0] = 1.0
+        # if self.index >= self.config.deathThreshold:
+        #     dead[dead != 0.0] = 1.0
 
 
         if len(self.cameraPositions) > 20:
@@ -94,9 +94,10 @@ class Environment:
         cropRect = (self.cameraPosition.x, self.cameraPosition.y, self.config.cameraHeight, self.config.cameraHeight)
         self.screen.blit(self.trackImage,(0,0),cropRect)
         for car in self.cars:
-            car.draw(self.screen, self.cameraPosition)
             if self.config.test:
-                self.trackImage.fill((255, 255, 255), (car.permaToMark, (3, 3)))
+                for point in car.permaToMark:
+                    self.screen.fill((0, 255, 255), (point - self.cameraPosition, (3, 3)))
+            car.draw(self.screen, self.cameraPosition)
         pygame.display.flip()
          
  

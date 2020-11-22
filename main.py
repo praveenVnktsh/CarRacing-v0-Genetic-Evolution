@@ -84,26 +84,24 @@ if __name__ == "__main__":
             nextAgents = []
 
             startTime = time.time()
-            for timestep in range(50000):
+            for timestep in range(configs.deathThreshold):
                 for agentIndex in range(len(currentAgents)):
                     if dead[agentIndex] != 1.0:
                         action[agentIndex] = currentAgents[agentIndex].chooseAction(state[agentIndex])
-                try:
-                    with np.errstate(all='raise'):
-                        action[:, 0] *=2 
-                        action[:, 0] -=1
-                        
-                except:
-                    print(action) 
+                        action[agentIndex] = action[agentIndex].clip(0.0, 1.0)
+                        action[agentIndex, 0] *=2 
+                        action[agentIndex, 0] -=1
 
                 if not configs.test:
                     if (generationIndex) % 5 == 0:
                         render = True
                     else:
-                        render = False
+                        render = True
                 else:
                     render = True
                     
+                if timestep %100 == 0:
+                    print('Timestep = ', timestep,'Generation = ',generationIndex,'Alive = ',configs.numberOfCars - np.sum(dead))
                 state, dead, rewards = env.step(action, render = render)
                 if 0.0 not in dead:
                     break

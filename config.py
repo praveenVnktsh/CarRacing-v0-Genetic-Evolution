@@ -6,17 +6,13 @@ import numpy as np
 class Args():
 
     def __init__(self):
-        self.checkpoint = 24
-        trial = 4
+        self.checkpoint = 9
+        trial = 5
         self.test = False
         
-
-        self.saveInterval = 10
-
-
         # evolution parameters
         
-        self.mutationPower = 0.01
+        self.mutationPower = 0.1
         self.nAvg = 1
 
         # environment parameters
@@ -49,7 +45,7 @@ class Args():
         #Car properties
         self.anglesToSee = [-50, -25, 0, 25, 50]
         self.numberOfLasers = len(self.anglesToSee)
-        self.maxSteering = 5
+        self.maxSteering = 25
         self.maxAcceleration = 0.3
         self.maxVelocity = 1.5
         self.freeDeceleration = 0.1
@@ -58,7 +54,7 @@ class Args():
         self.maxBraking = 0.05
         # Settings
         self.nSurvivors = 20
-        self.numberOfCars = 500
+        self.numberOfCars = 100
         if self.test:
             self.nSurvivors = 1
             self.numberOfCars = 1

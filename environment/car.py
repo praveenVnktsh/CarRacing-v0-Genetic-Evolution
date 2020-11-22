@@ -44,7 +44,8 @@ class Car(pygame.sprite.Sprite):
 
         self.laserDistances = [0.0, 0.0, 0.0, 0.0, 0.0]
         self.pointsToMark = []
-        self.permaToMark = (self.carTopPosition.x, self.carTopPosition.y)
+        self.permaToMark = [(self.carTopPosition.x, self.carTopPosition.y)]
+        
 
     def getPixelAt(self, dist, angleOffset):
         loc = [0,0]
@@ -113,7 +114,7 @@ class Car(pygame.sprite.Sprite):
                     self.reward -= 10
 
             if self.configs.test:
-                self.permaToMark = self.carTopPosition
+                self.permaToMark.append((self.carTopPosition.x, self.carTopPosition.y))
 
             
 
