@@ -25,7 +25,7 @@ def mutateWeightsAndBiases(agents, configs:Args):
     nextAgents = []
 
     if configs.test == True:
-        for i in range(1):
+        for i in range(configs.numberOfCars):
             pair = agents[i]
             agentNet = Agent(configs, device, stateDict = pair[0].getParams())
             nextAgents.append(agentNet)
@@ -121,6 +121,8 @@ if __name__ == "__main__":
                 currentAgents = mutateWeightsAndBiases(nextAgents, configs)
                 if (generationIndex + 1) % 5 == 0:
                     saveWeightsAndBiases(nextAgents, generationIndex, configs)
+            else:
+                env.saveImage()
 
         
             

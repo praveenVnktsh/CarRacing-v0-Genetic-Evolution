@@ -4,7 +4,7 @@ from pygame.math import Vector2
 import numpy as np
 from config import Args, configure
 import time
-
+import cv2
 class Environment:
     def __init__(self, configs:Args):
         self.exit = False
@@ -18,8 +18,9 @@ class Environment:
         self.cameraPosition = Vector2(configs.startingPositionX - configs.cameraHeight//2,configs.startingPositionY - configs.cameraHeight//2)
         self.cameraPositions = []
         self.cameraPositions.append((self.cameraPosition.x, self.cameraPosition.y))
-        
-        
+
+
+        self.image = np.zeros((self.config.width,self.config.height, 3)).astype(np.uint8)
 
         for i in range(self.config.numberOfCars):
             self.cars.add(Car(configs.startingPositionX , configs.startingPositionY - i//2, index = i, configs = self.config, trackImage=  self.trackImage))
@@ -74,7 +75,7 @@ class Environment:
         if render:
             self.draw()
             if self.config.test:
-                self.clock.tick(60)
+                self.clock.tick(120)
         
         return state, dead, rewards
         
@@ -88,16 +89,26 @@ class Environment:
         
         self.draw()
 
+    def saveImage(self):
+        cv2.imwrite(self.config.saveLocation  + str(self.config.checkpoint) + ' - IMAGE.png', self.image)
     
     def draw(self):
         self.screen.fill(self.config.bgColor)
         cropRect = (self.cameraPosition.x, self.cameraPosition.y, self.config.cameraHeight, self.config.cameraHeight)
         self.screen.blit(self.trackImage,(0,0),cropRect)
+        
         for car in self.cars:
             if self.config.test:
-                for point in car.permaToMark:
-                    self.screen.fill((0, 255, 255), (point - self.cameraPosition, (3, 3)))
+                point = (int(car.genTrackPoint[1]), int(car.genTrackPoint[0]))
+                self.image[point] = car.color
+
+                for point in car.trackPoints:
+                    point = (int(point[1]), int(point[0]))
+                    self.image[point] = np.array([255, 255, 255])
             car.draw(self.screen, self.cameraPosition)
+        if self.config.test:
+            dilation = cv2.dilate(self.image,np.ones((5,5),np.uint8),iterations = 1)
+            cv2.imshow('Track', cv2.resize(dilation, (500, 500)))
         pygame.display.flip()
          
  
@@ -117,6 +128,7 @@ if __name__ == '__main__':
 
         if 0.0 not in dead:
             time.sleep(2)
+            
             env.reset()
 
     

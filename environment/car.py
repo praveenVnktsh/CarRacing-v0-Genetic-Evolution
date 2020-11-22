@@ -4,6 +4,7 @@ from pygame.math import Vector2
 from config import Args
 import math
 import numpy as np
+import random
 
  
 class Car(pygame.sprite.Sprite):
@@ -31,7 +32,10 @@ class Car(pygame.sprite.Sprite):
         self.steering = 0.0
         self.braking = 0.0
         self.distanceToSee = configs.distanceToSee
+        self.color = np.array([0,255, 255])
+        self.color[random.randint(0, 2)] = int(self.index*255/configs.numberOfCars)
 
+        
         self.distance = 0
         self.reward = 0
 
@@ -43,8 +47,9 @@ class Car(pygame.sprite.Sprite):
         self.dead = False
 
         self.laserDistances = [0.0, 0.0, 0.0, 0.0, 0.0]
-        self.pointsToMark = []
-        self.permaToMark = [(self.carTopPosition.x, self.carTopPosition.y)]
+        self.pointsToMark = set()
+        self.genTrackPoint = (self.carTopPosition.x, self.carTopPosition.y)
+        self.trackPoints = set()
         
 
     def getPixelAt(self, dist, angleOffset):
@@ -78,7 +83,9 @@ class Car(pygame.sprite.Sprite):
             self.carTopPosition.x += int(self.image.get_rect().width/2  + self.length*(math.cos(self.angle*3.14/180)))
             self.carTopPosition.y += int(self.image.get_rect().height/2 - self.length*(math.sin(self.angle*3.14/180)))
             
-            self.pointsToMark = []
+            self.pointsToMark = set()
+            self.trackPoints = set()
+
 
             for i in range(len(self.configs.anglesToSee)):
                 angleOffset = self.configs.anglesToSee[i]
@@ -98,7 +105,9 @@ class Car(pygame.sprite.Sprite):
                         loc = (int(self.carTopPosition.x + low*math.cos((self.angle + angleOffset)*3.14/180)), int(self.carTopPosition.y - low*math.sin((self.angle + angleOffset)*3.14/180)))
                         dist = np.linalg.norm(np.array(loc) - np.array(self.carTopPosition))
                         self.laserDistances[i] = dist
-                        self.pointsToMark.append(loc)
+                        self.pointsToMark.add(loc)
+                        if dist < 120:
+                            self.trackPoints.add(loc)
                         break
                 
                 if pixel[3] == 0:
@@ -114,7 +123,7 @@ class Car(pygame.sprite.Sprite):
                     self.reward -= 10
 
             if self.configs.test:
-                self.permaToMark.append((self.carTopPosition.x, self.carTopPosition.y))
+                self.genTrackPoint = (self.carTopPosition.x, self.carTopPosition.y)
 
             
 

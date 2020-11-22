@@ -6,9 +6,9 @@ import numpy as np
 class Args():
 
     def __init__(self):
-        self.checkpoint = 9
+        self.checkpoint = 24
         trial = 5
-        self.test = False
+        self.test = True
         
         # evolution parameters
         
@@ -56,8 +56,9 @@ class Args():
         self.nSurvivors = 20
         self.numberOfCars = 100
         if self.test:
-            self.nSurvivors = 1
-            self.numberOfCars = 1
+            self.numberOfCars = 20
+            self.nSurvivors = self.numberOfCars
+            
         
         self.render = True
         self.deathThreshold = 4500
@@ -75,7 +76,7 @@ class Args():
 
     def getParamsDict(self):
         ret = {key:value for key, value in self.__dict__.items() if not key.startswith('__') and not callable(key)}
-        print('\nHYPERPARAMETERS = ', ret)
+        print('\Configurations = ', ret)
         return ret
     
     def actionTransformation(self, action):
