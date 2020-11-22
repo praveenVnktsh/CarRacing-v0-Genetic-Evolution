@@ -6,9 +6,10 @@ import numpy as np
 class Args():
 
     def __init__(self):
-        self.checkpoint = 24
-        trial = 5
-        self.test = True
+        # Logistical Parameters
+        self.checkpoint = 0
+        trial = 6
+        self.test = False
         
         # evolution parameters
         
@@ -43,7 +44,7 @@ class Args():
         self.bgColor = (120, 120, 120)
 
         #Car properties
-        self.anglesToSee = [-50, -25, 0, 25, 50]
+        self.anglesToSee = [-50, -40 , -30, -20, -10, 0, 10, 20, 30, 40, 50]
         self.numberOfLasers = len(self.anglesToSee)
         self.maxSteering = 25
         self.maxAcceleration = 0.3
@@ -86,7 +87,6 @@ class Args():
 def configure():
     
     args = Args()
-    
     useCuda = torch.cuda.is_available()
     device = torch.device("cuda" if useCuda else "cpu")
     return args, useCuda, device

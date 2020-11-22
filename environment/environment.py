@@ -5,6 +5,7 @@ import numpy as np
 from config import Args, configure
 import time
 import cv2
+
 class Environment:
     def __init__(self, configs:Args):
         self.exit = False
@@ -34,24 +35,25 @@ class Environment:
         state = np.zeros((self.config.numberOfCars, self.config.numberOfLasers))
         rewards = np.zeros((self.config.numberOfCars,))
         dead = np.zeros((self.config.numberOfCars,))
-        i = 0
+        
 
-        pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_UP]:
-            action[:, 1] = 1.0
-        if pressed[pygame.K_LEFT]:
-            action[:, 0] = 1.0
-        if pressed[pygame.K_RIGHT]:
-            action[:, 0] = -1.0
-        if pressed[pygame.K_SPACE]:
-            action[:, 2] = 1.0
+        # pressed = pygame.key.get_pressed()
+        # if pressed[pygame.K_UP]:
+        #     action[:, 1] = 1.0
+        # if pressed[pygame.K_LEFT]:
+        #     action[:, 0] = 1.0
+        # if pressed[pygame.K_RIGHT]:
+        #     action[:, 0] = -1.0
+        # if pressed[pygame.K_SPACE]:
+        #     action[:, 2] = 1.0
 
 
         self.index += 1
-        
+
+        i = 0
         bestCarDistance =  0
         for car in self.cars:
-            state[i], dead[i], rewards[i], carDistance = car.update(action[i], self.screen)
+            state[i], dead[i], rewards[i], carDistance = car.update(action[i])
             if carDistance > bestCarDistance:
                 bestCarDistance = carDistance
                 self.cameraPosition.x = car.position.x - self.config.cameraHeight//2
@@ -62,10 +64,7 @@ class Environment:
                     self.cameraPosition.y += self.config.cameraOffset
             i += 1
 
-        # if self.index >= self.config.deathThreshold:
-        #     dead[dead != 0.0] = 1.0
-
-
+        
         if len(self.cameraPositions) > 20:
             self.cameraPositions.pop(0)
         self.cameraPositions.append((self.cameraPosition.x, self.cameraPosition.y))
