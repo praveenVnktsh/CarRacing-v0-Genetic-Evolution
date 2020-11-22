@@ -7,13 +7,13 @@ class Args():
 
     def __init__(self):
         # Logistical Parameters
-        self.checkpoint = 0
+        self.checkpoint = 19
         trial = 6
-        self.test = False
+        self.test = True
         
         # evolution parameters
         
-        self.mutationPower = 0.1
+        self.mutationPower = 0.05
         self.nAvg = 1
 
         # environment parameters
@@ -34,7 +34,7 @@ class Args():
 
         #Environment properties        
         self.carImagePath = "environment/data/car.png"
-        self.trackPath = "environment/data/track.png"
+        self.trackPath = "environment/data/track_2.png"
         self.startingPositionX = 175
         self.startingPositionY = 435
         self.cameraOffset = 50
@@ -46,16 +46,17 @@ class Args():
         #Car properties
         self.anglesToSee = [-50, -40 , -30, -20, -10, 0, 10, 20, 30, 40, 50]
         self.numberOfLasers = len(self.anglesToSee)
-        self.maxSteering = 25
+        self.maxSteering = 10
         self.maxAcceleration = 0.3
         self.maxVelocity = 1.5
         self.freeDeceleration = 0.1
         self.angle = 85
         self.distanceToSee = 150
         self.maxBraking = 0.05
+
         # Settings
         self.nSurvivors = 20
-        self.numberOfCars = 100
+        self.numberOfCars = 200
         if self.test:
             self.numberOfCars = 20
             self.nSurvivors = self.numberOfCars

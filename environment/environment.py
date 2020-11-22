@@ -37,15 +37,15 @@ class Environment:
         dead = np.zeros((self.config.numberOfCars,))
         
 
-        # pressed = pygame.key.get_pressed()
-        # if pressed[pygame.K_UP]:
-        #     action[:, 1] = 1.0
-        # if pressed[pygame.K_LEFT]:
-        #     action[:, 0] = 1.0
-        # if pressed[pygame.K_RIGHT]:
-        #     action[:, 0] = -1.0
-        # if pressed[pygame.K_SPACE]:
-        #     action[:, 2] = 1.0
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_UP]:
+            action[:, 1] = 1.0
+        if pressed[pygame.K_LEFT]:
+            action[:, 0] = 1.0
+        if pressed[pygame.K_RIGHT]:
+            action[:, 0] = -1.0
+        if pressed[pygame.K_SPACE]:
+            action[:, 2] = 1.0
 
 
         self.index += 1
