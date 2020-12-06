@@ -14,7 +14,7 @@ class Environment:
         self.index = 0
         self.config = configs
         self.screen = pygame.display.set_mode((configs.cameraHeight, configs.cameraHeight))
-        self.trackImage = pygame.image.load(configs.trackPath).convert_alpha()
+        self.trackImage = pygame.image.load(configs.trackPath)
         self.cars = pygame.sprite.Group()
         self.cameraPosition = Vector2(configs.startingPositionX - configs.cameraHeight//2,configs.startingPositionY - configs.cameraHeight//2)
         self.cameraPositions = []
@@ -73,8 +73,8 @@ class Environment:
 
         if render:
             self.draw()
-            if self.config.test:
-                self.clock.tick(120)
+            # if self.config.test:
+            #     self.clock.tick(120)
         
         return state, dead, rewards
         

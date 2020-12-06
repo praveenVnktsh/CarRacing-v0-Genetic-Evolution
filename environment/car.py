@@ -38,7 +38,7 @@ class Car(pygame.sprite.Sprite):
         self.distance = 0
         self.reward = 0
 
-        self.image_car = pygame.image.load(self.configs.carImagePath).convert_alpha()
+        self.image_car = pygame.image.load(self.configs.carImagePath)
         self.image = self.image_car
         self.image_clean = self.image
         self.image = pygame.transform.rotate(self.image_clean, self.angle)
@@ -98,7 +98,7 @@ class Car(pygame.sprite.Sprite):
                 while low <= high:
                     midJ = (low + high)//2
                     pixel = self.getPixelAt(midJ, angleOffset)
-                    if pixel[3] == 0: #Alpha 0 => Track
+                    if pixel[2] == 255: #Alpha 0 => Track
                         low = midJ + 1
                     else:
                         high = midJ - 1
@@ -111,7 +111,7 @@ class Car(pygame.sprite.Sprite):
                             self.trackPoints.add(loc)
                         break
                 
-                if pixel[3] == 0: #Alpha 0 => Track
+                if pixel[2] == 255: #Alpha 0 => Track
                     self.laserDistances[i] = self.distanceToSee
             
             

@@ -7,7 +7,7 @@ class Args():
 
     def __init__(self):
         # Logistical Parameters
-        self.checkpoint = 19
+        self.checkpoint = 34
         trial = 6
         self.test = True
         
@@ -56,9 +56,9 @@ class Args():
 
         # Settings
         self.nSurvivors = 20
-        self.numberOfCars = 200
+        self.numberOfCars = 100
         if self.test:
-            self.numberOfCars = 20
+            self.numberOfCars = 1
             self.nSurvivors = self.numberOfCars
             
         
