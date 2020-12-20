@@ -7,7 +7,7 @@ class Args():
 
     def __init__(self):
         # Logistical Parameters
-        self.checkpoint = 0
+        self.checkpoint = 29
         trial = 9
         self.test = False
         

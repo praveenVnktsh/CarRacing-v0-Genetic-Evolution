@@ -16,6 +16,7 @@ class Car(pygame.sprite.Sprite):
         self.lastPosition = Vector2(x, y)
         self.velocity = Vector2(0.0, 0.0)
 
+        self.blended = False
 
         self.configs = configs
         self.angle = configs.angle
@@ -152,6 +153,9 @@ class Car(pygame.sprite.Sprite):
         return np.array(self.stateHistory).flatten(), self.dead, self.reward, self.distance
     
     def draw(self, surface, cameraPosition):
+        if self.blended == False and self.dead:
+            self.image.fill((100, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
+            self.blended = True
         surface.blit(self.image, self.position - cameraPosition)
         if not self.dead:
             for point in self.pointsToMark:
