@@ -7,9 +7,9 @@ class Args():
 
     def __init__(self):
         # Logistical Parameters
-        self.checkpoint = 29
-        trial = 8
-        self.test = True
+        self.checkpoint = 0
+        trial = 9
+        self.test = False
         
         # evolution parameters
         
@@ -25,7 +25,7 @@ class Args():
         
 
         #model parameters
-        self.valueStackSize = 1
+        self.valueStackSize = 3
 
         #agent parameters
         self.actionMultiplier = np.array([2., 1.0, 1.0])
@@ -55,10 +55,10 @@ class Args():
         self.distanceToSee = 150
 
         # Settings
-        self.nSurvivors = 40
-        self.numberOfCars = 500
+        self.nSurvivors = 20
+        self.numberOfCars = 100
         if self.test:
-            self.numberOfCars = 1
+            self.numberOfCars = 5
             self.nSurvivors = self.numberOfCars
             
         

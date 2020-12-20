@@ -32,7 +32,7 @@ class Environment:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
-        state = np.zeros((self.config.numberOfCars, self.config.numberOfLasers + 1))
+        state = np.zeros((self.config.numberOfCars, self.config.valueStackSize*(self.config.numberOfLasers + 1)))
         rewards = np.zeros((self.config.numberOfCars,))
         dead = np.zeros((self.config.numberOfCars,))
         

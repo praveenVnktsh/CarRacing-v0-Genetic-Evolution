@@ -49,6 +49,10 @@ class Car(pygame.sprite.Sprite):
         self.pointsToMark = set()
         self.genTrackPoint = (self.carTopPosition.x, self.carTopPosition.y)
         self.trackPoints = set()
+
+
+        #initialize statehistory
+        self.stateHistory = [[0.0 for j in range(configs.numberOfLasers + 1)] for i in range(configs.valueStackSize)]
         
 
     def getPixelAt(self, dist, angleOffset):
@@ -142,7 +146,10 @@ class Car(pygame.sprite.Sprite):
 
         self.state = self.laserDistances.copy()
         self.state.append(float(self.velocity.x/self.maxVelocity))
-        return self.state, self.dead, self.reward, self.distance
+        self.stateHistory.pop(0)
+        self.stateHistory.append(self.state)
+
+        return np.array(self.stateHistory).flatten(), self.dead, self.reward, self.distance
     
     def draw(self, surface, cameraPosition):
         surface.blit(self.image, self.position - cameraPosition)

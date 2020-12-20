@@ -75,7 +75,7 @@ if __name__ == "__main__":
         for generationIndex in range(configs.checkpoint, 100000):
             env.reset()
             action = np.zeros((configs.numberOfCars, 3)) 
-            state = np.ones((configs.numberOfCars, configs.numberOfLasers + 1))*configs.distanceToSee #+1 is for the velocity component
+            state = np.ones((configs.numberOfCars, (configs.numberOfLasers + 1)*configs.valueStackSize))*configs.distanceToSee #+1 is for the velocity component
             dead = np.zeros((configs.numberOfCars, ))
             rewards = np.zeros((configs.numberOfCars, ))
             nextAgents = []
@@ -99,7 +99,11 @@ if __name__ == "__main__":
                     
                 if timestep %100 == 0:
                     print('Timestep = ', timestep,'Generation = ',generationIndex,'Alive = ',configs.numberOfCars - np.sum(dead))
+
+
                 state, dead, rewards = env.step(action, render = render)
+
+
                 if 0.0 not in dead:
                     break
 
