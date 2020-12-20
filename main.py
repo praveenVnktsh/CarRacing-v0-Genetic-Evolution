@@ -100,7 +100,7 @@ if __name__ == "__main__":
                 logData = {
                     'Generation':generationIndex, 
                     'Timestep':timestep, 
-                    'Alive':configs.numberOfCars - np.sum(dead),
+                    'Alive':str(int(configs.numberOfCars - np.sum(dead)))  + ' | ' + str(configs.numberOfCars),
                     'Fitness': np.round(np.mean(rewards), 3),
                     }
 

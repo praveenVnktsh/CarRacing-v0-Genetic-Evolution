@@ -13,8 +13,8 @@ class Args():
 
     def __init__(self):
         # Logistical Parameters
-        self.checkpoint = 44
-        trial = 10
+        self.checkpoint = 19
+        trial = 11
         self.test = False
         
         # evolution parameters
@@ -31,7 +31,7 @@ class Args():
         
 
         #model parameters
-        self.valueStackSize = 1
+        self.valueStackSize = 4
 
         #agent parameters
         self.actionMultiplier = np.array([2., 1.0, 1.0])
@@ -80,7 +80,7 @@ class Args():
 
         os.makedirs(self.saveLocation, exist_ok = True)
         f = open(saveloc + 'params.json','w')
-        json.dump(self.getParamsDict(), f, cls=NumpyEncoder)
+        json.dump(self.getParamsDict(), f, indent=4, sort_keys=True, cls=NumpyEncoder)
         f.close()
 
     def getParamsDict(self):

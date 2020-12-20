@@ -22,7 +22,7 @@ class Environment:
         self.cameraPositions = []
         self.cameraPositions.append((self.cameraPosition.x, self.cameraPosition.y))
 
-
+        pygame.event.set_allowed([pygame.QUIT])
         self.image = np.zeros((self.config.width,self.config.height, 3)).astype(np.uint8)
 
         for i in range(self.config.numberOfCars):
@@ -39,15 +39,15 @@ class Environment:
         dead = np.zeros((self.config.numberOfCars,))
         
 
-        pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_UP]:
-            action[:, 1] = 1.0
-        if pressed[pygame.K_LEFT]:
-            action[:, 0] = 1.0
-        if pressed[pygame.K_RIGHT]:
-            action[:, 0] = -1.0
-        if pressed[pygame.K_SPACE]:
-            action[:, 2] = 1.0
+        # pressed = pygame.key.get_pressed()
+        # if pressed[pygame.K_UP]:
+        #     action[:, 1] = 1.0
+        # if pressed[pygame.K_LEFT]:
+        #     action[:, 0] = 1.0
+        # if pressed[pygame.K_RIGHT]:
+        #     action[:, 0] = -1.0
+        # if pressed[pygame.K_SPACE]:
+        #     action[:, 2] = 1.0
 
 
         self.index += 1
@@ -117,7 +117,7 @@ class Environment:
 
         
         if not data is None:
-            s = pygame.Surface(((len(data.keys())*20 + 30),len(data.keys())*20 + 5), pygame.SRCALPHA)   # per-pixel alpha
+            s = pygame.Surface(((len(data.keys())*20 + 35),len(data.keys())*20 + 5), pygame.SRCALPHA)   # per-pixel alpha
             s.fill((255,255,255,128))  
             self.screen.blit(s, (0,0))
             
