@@ -1,7 +1,7 @@
 
 import pygame
 from pygame.math import Vector2
-from config import Args
+from environment.config import Args
 import math
 import numpy as np
 
@@ -62,12 +62,15 @@ class Car(pygame.sprite.Sprite):
     def update(self, action):
         if not self.dead:
             ######### Car physics
-            self.steering     = action[0]*self.maxSteering
+            
             self.acceleration = action[1]*self.maxAcceleration
             self.braking      = action[2]*self.maxBraking
 
             self.velocity += (self.acceleration - self.braking - self.freeDeceleration , 0)
             self.velocity.x = max(0, min(self.velocity.x, self.maxVelocity))
+
+            self.steering = action[0]*((self.maxSteering - 5)*(1 - (self.velocity.x/self.maxVelocity)) + 5) ##max steering angle should change with speed
+
             if self.steering:
                 turning_radius = self.length / math.sin(math.radians(self.steering))
                 angular_velocity = self.velocity.x / turning_radius

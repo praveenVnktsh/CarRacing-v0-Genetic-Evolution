@@ -2,7 +2,7 @@ from environment.car import Car
 import pygame
 from pygame.math import Vector2
 import numpy as np
-from config import Args, configure
+from environment.config import Args, configure
 import time
 import cv2
 
@@ -73,8 +73,8 @@ class Environment:
 
         if render:
             self.draw()
-            # if self.config.test:
-            #     self.clock.tick(120)
+            if self.config.test:
+                self.clock.tick(30)
         
         return state, dead, rewards
         
@@ -116,7 +116,7 @@ class Environment:
 if __name__ == '__main__':
     
     
-    config = configure()
+    config, useCuda, device = configure()
 
     env = Environment(config)
     

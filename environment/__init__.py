@@ -1,2 +1,3 @@
-from environment.car import Car
-from environment.environment import Environment
+from environment.car import *
+from environment.config import *
+from environment.environment import *
