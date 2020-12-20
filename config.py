@@ -1,14 +1,20 @@
 import torch
 import os
 import numpy as np
+import json
 
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
 
 class Args():
 
     def __init__(self):
         # Logistical Parameters
-        self.checkpoint = 29
-        trial = 9
+        self.checkpoint = 44
+        trial = 10
         self.test = False
         
         # evolution parameters
@@ -25,7 +31,7 @@ class Args():
         
 
         #model parameters
-        self.valueStackSize = 3
+        self.valueStackSize = 1
 
         #agent parameters
         self.actionMultiplier = np.array([2., 1.0, 1.0])
@@ -33,6 +39,7 @@ class Args():
 
 
         #Environment properties        
+        self.font = 'Calibri'
         self.carImagePath = "environment/data/car.png"
         self.trackPath = "environment/data/track.png"
         self.startingPositionX = 175
@@ -73,7 +80,7 @@ class Args():
 
         os.makedirs(self.saveLocation, exist_ok = True)
         f = open(saveloc + 'params.json','w')
-        f.write(str(self.getParamsDict()))
+        json.dump(self.getParamsDict(), f, cls=NumpyEncoder)
         f.close()
 
     def getParamsDict(self):

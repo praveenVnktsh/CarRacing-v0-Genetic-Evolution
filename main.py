@@ -96,12 +96,16 @@ if __name__ == "__main__":
                         render = True
                 else:
                     render = True
-                    
-                if timestep %100 == 0:
-                    print('Timestep = ', timestep,'Generation = ',generationIndex,'Alive = ',configs.numberOfCars - np.sum(dead))
+                
+                logData = {
+                    'Generation':generationIndex, 
+                    'Timestep':timestep, 
+                    'Alive':configs.numberOfCars - np.sum(dead),
+                    'Fitness': np.round(np.mean(rewards), 3),
+                    }
 
 
-                state, dead, rewards = env.step(action, render = render)
+                state, dead, rewards = env.step(action, data = logData, render = render)
 
 
                 if 0.0 not in dead:

@@ -10,6 +10,8 @@ class Environment:
     def __init__(self, configs:Args):
         self.exit = False
         pygame.init()  
+        pygame.font.init()  
+        self.myfont = pygame.font.SysFont(configs.font, 15, bold=True)
         self.clock = pygame.time.Clock()
         self.index = 0
         self.config = configs
@@ -28,7 +30,7 @@ class Environment:
         
         self.draw()
 
-    def step(self, action, render = True):
+    def step(self, action, data = None,  render = True):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
@@ -72,7 +74,7 @@ class Environment:
         self.cameraPosition =Vector2(int(mean[0]), int(mean[1]))
 
         if render:
-            self.draw()
+            self.draw(data)
             if self.config.test:
                 self.clock.tick(30)
         
@@ -91,11 +93,15 @@ class Environment:
     def saveImage(self):
         cv2.imwrite(self.config.saveLocation  + str(self.config.checkpoint) + ' - IMAGE.png', self.image)
     
-    def draw(self):
+    def draw(self, data = None):
+        
         self.screen.fill(self.config.bgColor)
         cropRect = (self.cameraPosition.x, self.cameraPosition.y, self.config.cameraHeight, self.config.cameraHeight)
         self.screen.blit(self.trackImage,(0,0),cropRect)
         
+        
+
+
         for car in self.cars:
             if self.config.test:
                 point = (int(car.genTrackPoint[1]), int(car.genTrackPoint[0]))
@@ -108,6 +114,19 @@ class Environment:
         if self.config.test:
             dilation = cv2.dilate(self.image,np.ones((5,5),np.uint8),iterations = 1)
             cv2.imshow('Track', cv2.resize(dilation, (500, 500)))
+
+        
+        if not data is None:
+            s = pygame.Surface(((len(data.keys())*20 + 30),len(data.keys())*20 + 5), pygame.SRCALPHA)   # per-pixel alpha
+            s.fill((255,255,255,128))  
+            self.screen.blit(s, (0,0))
+            
+            i = 0
+            for key in data.keys():
+                renderedText = self.myfont.render(str(key)+ " : " + str(data[key]), False, (0, 0, 0))
+                self.screen.blit(renderedText,(5,5 + 20*i))
+                i += 1
+
         pygame.display.flip()
          
  
