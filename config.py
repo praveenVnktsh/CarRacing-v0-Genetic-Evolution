@@ -7,9 +7,9 @@ class Args():
 
     def __init__(self):
         # Logistical Parameters
-        self.checkpoint = 0
-        trial = 7
-        self.test = False
+        self.checkpoint = 29
+        trial = 8
+        self.test = True
         
         # evolution parameters
         
@@ -55,8 +55,8 @@ class Args():
         self.distanceToSee = 150
 
         # Settings
-        self.nSurvivors = 20
-        self.numberOfCars = 100
+        self.nSurvivors = 40
+        self.numberOfCars = 500
         if self.test:
             self.numberOfCars = 1
             self.nSurvivors = self.numberOfCars

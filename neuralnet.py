@@ -6,12 +6,11 @@ class Net(nn.Module):
     def __init__(self, args:Args):
         super(Net, self).__init__()
         self.neuralnetwork = nn.Sequential( 
-            nn.Linear(args.valueStackSize*args.numberOfLasers, 4, bias = True), #stacking previous distances along with action
+            nn.Linear(args.valueStackSize*(args.numberOfLasers + 1), 4, bias = True), #stacking previous distances along with action, with add
             nn.ReLU(),  
             nn.Linear(4, 3, bias = True), #stacking previous distances along with action
             nn.ReLU(),
             nn.Linear(3, 3, bias = True),
-            # nn.Softmax(dim = 1),
             nn.ReLU(),
         ) 
 

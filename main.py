@@ -7,6 +7,7 @@ from config import Args, configure
 from API_KEYS import api_key, project_name
 import torch
 import os
+import glob
 import time
 configs, use_cuda,  device = configure()
 
@@ -54,8 +55,9 @@ if __name__ == "__main__":
     
     currentAgents = []
     if configs.checkpoint != 0:
-        for spawnIndex in range(configs.nSurvivors):
-            statedict = torch.load(configs.saveLocation +'generation_'+str(configs.checkpoint) +  '/'  + str(spawnIndex) +  '-AGENT.pkl')
+        for location in sorted(glob.glob(configs.saveLocation +'generation_'+str(configs.checkpoint) +  '/*')):
+            print('LOADING FROM',location)
+            statedict = torch.load(location)
             currentAgents.append(statedict)
         
         currentAgents = mutateWeightsAndBiases(currentAgents, configs)
@@ -69,16 +71,11 @@ if __name__ == "__main__":
     env = Environment(configs)
 
     with getTrainTest(configs.test, experiment):
-        action = np.zeros((configs.numberOfCars, 3))
-        state = np.ones((configs.numberOfCars, configs.numberOfLasers))*configs.distanceToSee
-        dead = np.zeros((configs.numberOfCars, ))
         rewards = np.zeros((configs.numberOfCars, ))
-
-            
         for generationIndex in range(configs.checkpoint, 100000):
             env.reset()
-            action = np.zeros((configs.numberOfCars, 3))
-            state = np.ones((configs.numberOfCars, configs.numberOfLasers))*configs.distanceToSee
+            action = np.zeros((configs.numberOfCars, 3)) 
+            state = np.ones((configs.numberOfCars, configs.numberOfLasers + 1))*configs.distanceToSee #+1 is for the velocity component
             dead = np.zeros((configs.numberOfCars, ))
             rewards = np.zeros((configs.numberOfCars, ))
             nextAgents = []
@@ -88,9 +85,9 @@ if __name__ == "__main__":
                 for agentIndex in range(len(currentAgents)):
                     if dead[agentIndex] != 1.0:
                         action[agentIndex] = currentAgents[agentIndex].chooseAction(state[agentIndex])
-                        action[agentIndex] = action[agentIndex].clip(0.0, 1.0)
-                        action[agentIndex, 0] *=2 
-                        action[agentIndex, 0] -=1
+                action = action.clip(0.0, 1.0)
+                action[:, 0] *=2 
+                action[:, 0] -=1
 
                 if not configs.test:
                     if (generationIndex) % 5 == 0:

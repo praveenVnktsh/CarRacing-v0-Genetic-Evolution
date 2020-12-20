@@ -32,7 +32,7 @@ class Environment:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
-        state = np.zeros((self.config.numberOfCars, self.config.numberOfLasers))
+        state = np.zeros((self.config.numberOfCars, self.config.numberOfLasers + 1))
         rewards = np.zeros((self.config.numberOfCars,))
         dead = np.zeros((self.config.numberOfCars,))
         
@@ -54,7 +54,7 @@ class Environment:
         bestCarDistance =  0
         for car in self.cars:
             state[i], dead[i], rewards[i], carDistance = car.update(action[i])
-            if carDistance > bestCarDistance:
+            if (dead[i] != 1.0) and carDistance > bestCarDistance:
                 bestCarDistance = carDistance
                 self.cameraPosition.x = car.position.x - self.config.cameraHeight//2
                 self.cameraPosition.y = car.position.y - self.config.cameraHeight//2

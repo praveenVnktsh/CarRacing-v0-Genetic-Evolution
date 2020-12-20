@@ -140,7 +140,9 @@ class Car(pygame.sprite.Sprite):
             if self.configs.test: # For marking the track points
                 self.genTrackPoint = (self.carTopPosition.x, self.carTopPosition.y)
 
-        return self.laserDistances, self.dead, self.reward, self.distance
+        self.state = self.laserDistances.copy()
+        self.state.append(float(self.velocity.x/self.maxVelocity))
+        return self.state, self.dead, self.reward, self.distance
     
     def draw(self, surface, cameraPosition):
         surface.blit(self.image, self.position - cameraPosition)
