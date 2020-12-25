@@ -13,8 +13,8 @@ class Args():
 
     def __init__(self):
         # Logistical Parameters
-        self.checkpoint = 19
-        trial = 11
+        self.checkpoint = 0
+        trial = 14
         self.test = False
         
         # evolution parameters
@@ -31,7 +31,7 @@ class Args():
         
 
         #model parameters
-        self.valueStackSize = 4
+        self.valueStackSize = 1
 
         #agent parameters
         self.actionMultiplier = np.array([2., 1.0, 1.0])
@@ -60,6 +60,7 @@ class Args():
         self.freeDeceleration = 0.1
         self.angle = 85
         self.distanceToSee = 150
+        self.steeringmaxcut = 5
 
         # Settings
         self.nSurvivors = 20
@@ -85,7 +86,6 @@ class Args():
 
     def getParamsDict(self):
         ret = {key:value for key, value in self.__dict__.items() if not key.startswith('__') and not callable(key)}
-        print('\Configurations = ', ret)
         return ret
     
     def actionTransformation(self, action):

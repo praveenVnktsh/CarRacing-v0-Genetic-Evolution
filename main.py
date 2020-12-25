@@ -1,13 +1,14 @@
 from comet_ml import Experiment
-from time import sleep
 import numpy as np
 from agentFile import Agent
 from environment import Car, Environment
+from visualizer import Visualizer
 from config import Args, configure
 from API_KEYS import api_key, project_name
 import torch
 import os
 import glob
+import cv2
 import time
 configs, use_cuda,  device = configure()
 
@@ -105,8 +106,9 @@ if __name__ == "__main__":
                     }
 
 
-                state, dead, rewards = env.step(action, data = logData, render = render)
-
+                state, dead, rewards, bestCarIndex = env.step(action, data = logData, render = render)
+                
+                # cv2.imshow('NNViz', Visualizer.draw(currentAgents[bestCarIndex].net.state_dict().copy(), scale = 2))
 
                 if 0.0 not in dead:
                     break

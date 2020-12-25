@@ -1,4 +1,5 @@
 model/
 __pycache__/
 API_KEYS.py
-
+visualizerTest.py
+.gitignore
